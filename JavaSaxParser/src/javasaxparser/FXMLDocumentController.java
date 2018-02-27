@@ -56,16 +56,13 @@ public class FXMLDocumentController implements Initializable
         if (file != null)
         {
             //Do the parsing
-            System.out.println("I happened");
             try
             {
-                XMLNode root = XMLStackParser.load(file);
-                System.out.println("Maybe it worked?");
-                
                 this.textArea.clear();
-                displayXML(root, 0);
+                XMLNode root = XMLStackParser.load(file);
                 
-                System.out.println("It didn't infinite loop");
+                //Display the results
+                displayParsedXML(root, 0);
             } //End try
             catch (Exception e)
             {
@@ -77,25 +74,30 @@ public class FXMLDocumentController implements Initializable
         
     } //End private void handleOpen(Event event)
     
-    private void displayXML(XMLNode currentNode, int depth)
+    private void displayParsedXML(XMLNode currentNode, int depth)
     {
+        //Declare variables
+        Boolean noContent = false;
+        
         for (int i = 0; i < depth; i++)
         {
             this.textArea.appendText("\t");
-        } //End
+        } //End for (int i = 0; i < depth; i++)
+        
         this.textArea.appendText("<" + currentNode.name);
         
         for (Map.Entry<String, String> attribute : currentNode.attributes.entrySet())
         {
-            this.textArea.appendText(" " + attribute.getKey() + "=" + attribute.getValue());
-        }
+            this.textArea.appendText(" " + attribute.getKey() + "=\"" + attribute.getValue() + "\"");
+        } //End for (Map.Entry<String, String> attribute : currentNode.attributes.entrySet())
         
         this.textArea.appendText(">");
         
         if (currentNode.content.equals(""))
         {
+            noContent = true;
             this.textArea.appendText("\n");
-        } //End 
+        } //End if (currentNode.content.equals(""))
         else
         {
             if (currentNode.content.length() > 50)
@@ -105,11 +107,11 @@ public class FXMLDocumentController implements Initializable
                 for (int i = 0; i < depth + 1; i++)
                 {
                     this.textArea.appendText("\t");
-                } //End
-            } //End 
+                } //End for (int i = 0; i < depth + 1; i++)
+            } //End if (currentNode.content.length() > 50)
             
             this.textArea.appendText(currentNode.content);
-        } //End 
+        } //End else
         
         if (currentNode.properties.size() > 0)
         {
@@ -117,18 +119,18 @@ public class FXMLDocumentController implements Initializable
             {
                 for (int j = 0; j < property.getValue().size(); j++)
                 {
-                    displayXML(property.getValue().get(j), depth + 1);
-                } //End 
-            } //End 
-        } //End 
+                    displayParsedXML(property.getValue().get(j), depth + 1);
+                } //End for (int j = 0; j < property.getValue().size(); j++)
+            } //End for (Map.Entry<String, List<XMLNode>> property : currentNode.properties.entrySet())
+        } //End if (currentNode.properties.size() > 0)
         
-        if (currentNode.content.equals(""))
+        if (noContent)
         {
             for (int i = 0; i < depth; i++)
             {
                 this.textArea.appendText("\t");
-            } //End
-        } //End 
+            } //End for (int i = 0; i < depth; i++)
+        } //End if (noContent)
         
         if (currentNode.content.length() > 50)
         {
@@ -137,13 +139,11 @@ public class FXMLDocumentController implements Initializable
             for (int i = 0; i < depth; i++)
             {
                 this.textArea.appendText("\t");
-            } //End 
-        } //End 
+            } //End for (int i = 0; i < depth; i++)
+        } //End if (currentNode.content.length() > 50)
         
         this.textArea.appendText("</" + currentNode.name + ">\n");
-        
-        
-    } //End 
+    } //End private void displayParsedXML(XMLNode currentNode, int depth)
     
     private void displayExceptionAlert(String message, Exception ex)
     {

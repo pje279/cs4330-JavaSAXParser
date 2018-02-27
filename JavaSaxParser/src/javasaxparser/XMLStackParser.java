@@ -22,12 +22,6 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XMLStackParser extends DefaultHandler
 {
-    //private XMLNode root;
-    //private XMLNode[] stack;
-    //private XMLNode currentNode;
-    
-    //private String currentElementName = "";
-    //private String currentElementData = "";
     
     public static XMLNode load(File xmlFile) throws Exception
     {
@@ -42,24 +36,19 @@ public class XMLStackParser extends DefaultHandler
             DefaultHandler handler = new DefaultHandler()
             {
                 XMLNode currentNode = null;
-    
-                //String currentElementName = "";
-                //String currentElementData = "";
                 
                 @Override
                 public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
                 {
                     XMLNode node = new XMLNode();
                     node.name = qName;
-                    //node.attributes.putAll(attributes);
+                    
                     for (int i = 0; i < attributes.getLength(); i++)
                     {
                         node.attributes.put(attributes.getQName(i), attributes.getValue(i));
-                    } //End 
+                    } //End for (int i = 0; i < attributes.getLength(); i++)
                     
-                    //node.attributes = (HashMap<String, String>) attributes;
                     stack.add(0, node);
-                    //stack.add(node);
                     
                     if (currentNode != null)
                     {
@@ -83,7 +72,7 @@ public class XMLStackParser extends DefaultHandler
                 {
                     if (stack.size() > 0)
                     {
-                        final XMLNode poppedNode = stack.remove(0);
+                        XMLNode poppedNode = stack.remove(0);
                         
                         if (poppedNode != null)
                         {
